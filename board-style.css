@@ -1,0 +1,111 @@
+
+table {
+border-collapse: collapse;
+width: 100%;
+}
+
+th, td {
+padding: 10px;
+text-align: center;
+border: 1px solid #ddd;
+}
+
+th {
+background-color: #f2f2f2;
+}
+
+a {
+color: #333;
+text-decoration: none;
+}
+
+.btn-write {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.btn-write:hover {
+    background-color: #0069d9;
+    color: #fff;
+}
+  
+
+.popup-wrapper {
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .popup {
+    min-width: 800px;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+  }
+  
+  .popup h3 {
+    margin-top: 0;
+  }
+  
+  .popup form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .popup label {
+    margin-top: 10px;
+  }
+  
+  .popup input,
+  .popup textarea {
+    margin-top: 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+    resize: none;
+    font-size: 16px;
+  }
+  
+  .popup button[type="submit"],
+  .popup button[type="button"] {
+    margin-top: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .popup button[type="submit"] {
+    background-color: #4CAF50;
+    color: #fff;
+  }
+  
+  .popup button[type="submit"]:hover {
+    background-color: #3E8E41;
+  }
+  
+  .popup button[type="button"] {
+    background-color: #f44336;
+    color: #fff;
+  }
+  
+  .popup button[type="button"]:hover {
+    background-color: #da190b;
+  }

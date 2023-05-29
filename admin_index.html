@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>관리자 페이지</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- 스타일 시트 링크 추가 -->
+	<link rel="stylesheet" href="admin-style.css">
+	<link rel="stylesheet" href="board-style.css">    
+    <!-- froala-editor CSS 파일 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/froala-editor@3.2.7/css/froala_editor.pkgd.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/froala-editor@3.2.7/css/froala_style.min.css">
+
+    <!-- froala-editor JavaScript 파일 -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/froala-editor@3.2.7/js/froala_editor.pkgd.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+<body>
+	<header>
+		<h1>관리자 페이지</h1>
+		<nav>
+			<ul>
+				<!-- 관리자 메뉴 항목 추가 -->
+				<li><a href="/admin_index.html" style="color:white">게시글 관리</a></li>
+				<li><a href="#" style="color:white">로그아웃</a></li>
+			</ul>
+		</nav>
+	</header>
+	<main>
+		<!-- 관리자 콘텐츠 영역 추가 -->
+		<section style="min-height:400px; min-width:97%; margin:0px auto">
+            <div style="text-align: right;">
+                <a onclick="openPopup()" class="btn-write">글쓰기</a>
+            </div>
+            <h2>게시물 목록</h2>            
+            <table id="post-table">
+                <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>작성일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 게시물 목록 데이터 추가 -->
+                    <tr>
+                        <td colspan="4" style="text-align:center">글이 없습니다</td>
+                    </tr>
+                    <!--tr>
+                        <td>3</td>
+                        <td><a href="#">세 번째 게시물 제목</a></td>
+                        <td>작성자3</td>
+                        <td>2023-02-21</td>
+                    </tr-->
+                    <!--tr>
+                        <Td colspan="4">
+                            <nav>
+                                <ul style="justify-content:center">
+                                    <li><a href="#">1</a></li>
+                                    <li><a href="#">2</a></li>
+                                    <li><a href="#">3</a></li>
+                                    <li><a href="#">4</a></li>
+                                    <li><a href="#">5</a></li>
+                                </ul>
+                            </nav>
+                        </Td>
+                    </tr-->
+                </tbody>
+            </table>
+		</section>
+	</main>
+	<footer>
+		<!-- 관리자 페이지 하단 정보 추가 -->
+		<p>Copyright © 2023</p>
+	</footer>
+
+
+  <!-- 글쓰기 팝업 -->
+  <div class="popup-wrapper" id="popup-wrapper">
+    <div class="popup">
+      <h3>글쓰기</h3>
+        <label for="title">제목</label>
+        <input type="text" id="title" name="title" placeholder="제목을 입력하세요">
+        <br>
+        <div style="margin-top: 10px;">
+        <div id="editor" style="height:400px; overflow-y:scroll; "></div>
+        </div>
+
+        <button type="submit" id="save-btn">저장하기</button>
+        <button type="button" onclick="closePopup()">취소</button>
+    </div>
+  </div>    
+</body>
+</html>
+<script>
+/*
+에디터 관련 참고사항
+// 에디터 내용 가져오기
+var content = editor.html.get();
+
+// 에디터 내용 설정하기
+editor.html.set('<p>새로운 내용</p>');
+
+// 에디터 커서 이동하기
+editor.selection.setAtEnd(editor.el);
+*/
+    var NOW_PAGE = 1;
+    var editor = null;
+    function openPopup() {  //글쓰기 팝업 띄우기
+        var popup = document.getElementById("popup-wrapper");   //id=popup-wrapper인 개체(팝업)를 popup 변수에 담기
+        popup.style.display = "flex";   //해당 팝업이 보이도록 함
+
+        editor = new FroalaEditor("#editor");  //id==editor인 div를 Froala 웹에디터로 변경함
+
+        $("#title").val("")   //제목을 공백 상태로 초기화
+        editor.html.set('');  //내용(웹에디터)을 공백 상태로 초기화
+    }
+
+    function closePopup() {   //글쓰기 팝업 닫기 (취소 버튼 클릭시)
+        var popup = document.getElementById("popup-wrapper");
+        popup.style.display = "none";   //팝업이 보이지 않도록 함
+    }
+
+    $("#save-btn").click(function() {  //저장하기 버튼 클릭시.. /save로 접근하여 제목, 내용을 넘겨줌 (/save에서 받은 내용을 Mysql에 저장)
+        var title = $("#title").val();   //제목 가져오기
+        var content = editor.html.get();  //내용 가져오기
+        // Froala Editor를 사용하는 경우, 내용을 가져오는 방법입니다.
+
+        //alert("입력한 내용은:" + content + "입니다")
+        //return
+
+        $.ajax({
+        url: "/save",  // 전송할 서버 URL  (파이썬 flask 코드가 있음)
+        type: "POST",     // 전송 방식
+        data: {           // 전송할 데이터
+            title: title,   //제목 넘기기
+            content: content  //내용 넘기기
+        },
+        success: function(result) {  // 전송 성공 시 호출되는 콜백 함수
+            console.log(result);
+            // 전송 결과를 콘솔에 출력합니다.
+
+            if(result == "OK") { //정상 실행
+                alert("정상 저장되었습니다")
+                loadPost(NOW_PAGE)  //정상 저장 시... 전체 글 목록을 다시 받아옴
+                closePopup()   //팝업창 닫기
+            } 
+
+        },
+        error: function(jqXHR, textStatus, errorThrown) {  // 전송 실패 시 호출되는 콜백 함수
+            console.log(textStatus, errorThrown);
+            // 전송 실패 정보를 콘솔에 출력합니다.
+        }
+        });
+    });    
+
+    function check_adm() {  //관리자 권한이 있는지 여부를 받아옴
+        var isOK = false
+        $.ajax({
+            url: '/check_adm',
+            type: 'GET',
+            async: false,
+            data: {},
+            success: function(data) {
+                if(data == "OK") {  //권한이 있는 경우
+                    isOK = true    // true를 반환할 예정 (권한 없다면 false 반환됨)
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {  
+                console.log(textStatus, errorThrown);
+            }
+        });  
+        return isOK;
+    }
+ 
+    function loadPost(page) {  //글 목록 가지고 오는 함수
+        $.ajax({
+            url: '/get_posts',  //이 URL에 담긴 파이썬 flask를 통해 Mysql 데이터를 가져옴
+            type: 'GET',
+            dataType: 'json',
+            data: {page: page},  //가지고 올 페이지 값을 넘김
+            success: function(data) {
+                var posts = data;
+                //console.log(posts)
+                var html = '';
+                if(posts.total_count == 0) {
+                    html += "<tr><td colspan=4 style='text-align:center'>글이 없습니다</td></tr>"
+                }
+                else {
+                    $.each(posts.data, function(index, post) {  //전체 글 목록이 json 연관 배열 형태로 반환됨
+                    html += '<tr>';
+                    html += '<td>' + post.id + '</td>'; //글 고유 아이디
+                    html += '<td>' + post.title + ' <a style="color:skyblue; cursor:pointer; text-decoration:underline" onclick="deletePost(\''+post.id+'\');">[삭제]</a></td>';   //글 제목
+                    html += '<td>소스놀이터</td>';  //작성자 (고정)
+                    html += '<td>' + post.created_at + '</td>';  //작성 날짜
+                    html += '</tr>';
+                    });
+                    var postPerPage = 9; //페이지당 글 수
+                    // posts.total_count == 총 글 수
+                    var totPage = Math.ceil(posts.total_count / postPerPage);
+                    html += generatePagination(totPage, page);  //페이징 HTML 생성 함수
+                }
+
+                $('#post-table tbody').html(html);
+
+                NOW_PAGE = page;
+            }
+        });    
+    }
+
+    function deletePost(post_id) {  //글 삭제하기
+
+        if(!confirm("정말 삭제하시겠습니까?")) {
+            return false
+        }
+
+        $.ajax({
+        url: "/delete_post",  // 전송할 서버 URL
+        type: "POST",     // 전송 방식
+        data: {           // 전송할 데이터
+            "post_id": post_id
+        },
+        success: function(result) {  // 전송 성공 시 호출되는 콜백 함수
+            if(result == "OK") { //정상 실행
+                alert("정상 삭제되었습니다")
+                loadPost(NOW_PAGE)
+            } 
+
+        },
+        error: function(jqXHR, textStatus, errorThrown) {  // 전송 실패 시 호출되는 콜백 함수
+            console.log(textStatus, errorThrown);
+            // 전송 실패 정보를 콘솔에 출력합니다.
+        }
+        });
+    }
+
+    function generatePagination(totalPages, currentPage) {  //페이징 HTML 생성 함수
+        var html = '<tr><td colspan=4 style="text-align:center"><nav><ul style="justify-content:center">';
+        var maxPages = 9; // 표시할 페이지 수
+
+        // 이전 페이지 링크 생성
+        if (currentPage > 1) {  //현재 페이지가 1보다 크다면.. 이전 가기 기능 활성화
+          html += '<li class="page-item"><a class="page-link" style="cursor:pointer" onclick="loadPost('+(currentPage - 1)+')">이전</a></li>';
+        }
+
+        // 페이지 링크 생성
+        var startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));  //페이징 시작 페이지
+        var endPage = Math.min(totalPages, startPage + maxPages - 1);  //페이징 마침 페이지
+        for (var i = startPage; i <= endPage; i++) {    //시작 페이지 ~ 마침 페이지까지 정보를 담음 (나중에 출력 예정)
+          html += '<li class="page-item ' + (i == currentPage ? 'active' : '') + '"><a class="page-link" style="cursor:pointer" onclick="loadPost(' + i + ')">' + i + '</a></li>';
+        }
+
+        // 다음 페이지 링크 생성
+        if (currentPage < totalPages) {  //현재 페이지가 마지막 페이지가 아니라면 다음 가기 기능 활성화
+           html += '<li class="page-item"><a class="page-link" style="cursor:pointer" onclick="loadPost('+(currentPage + 1)+')">다음</a></li>';
+        }
+
+        html += '</ul></nav></td></tr>';
+
+        return html;
+    }
+
+    $(document).ready(function() {
+        if(!check_adm()) {
+            alert("접근이 허용되지 않습니다")            
+            history.back();
+        }
+        else {
+            loadPost(1);
+        }
+    });            
+</script>
